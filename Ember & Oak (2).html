@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="Ember & Oak, a small roastery and chai bar. Small-batch coffee, masala chai, and fresh bread.">
+<title>Ember &amp; Oak · Slow mornings, good coffee</title>
+<style>
+  :root {
+    --espresso: #2B1D14; --espresso-2: #3a2819; --cream: #F5EBDD; --paper: #FFF9F1;
+    --saffron: #E8A33D; --ember: #C8623A; --maroon: #8C2F39; --sage: #8A9A7B;
+    --muted: #D9C8B4; --ink: #2B1D14; --ink-soft: #6B5444;
+    --ease: cubic-bezier(.2,.7,.2,1);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--espresso); color: var(--cream); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-decoration: none; }
+  img, svg { display: block; max-width: 100%; }
+
+  /* ---------- Nav ---------- */
+  .nav { position: fixed; inset: 0 0 auto 0; z-index: 50; display: flex; justify-content: space-between; align-items: center; padding: 18px 22px; transition: padding .4s var(--ease), background .4s, backdrop-filter .4s; }
+  .nav.scrolled { padding: 12px 22px; background: rgba(43,29,20,.82); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+  .brand { font-family: Georgia, "Times New Roman", serif; font-size: 20px; font-style: italic; letter-spacing: .2px; }
+  .nav-cta { position: relative; font-size: 13px; padding: 9px 16px; border: .5px solid var(--saffron); border-radius: 999px; overflow: hidden; isolation: isolate; transition: color .35s; }
+  .nav-cta::before { content: ""; position: absolute; inset: 0; background: var(--saffron); transform: translateX(-101%); transition: transform .45s var(--ease); z-index: -1; }
+  .nav-cta:hover { color: var(--espresso); }
+  .nav-cta:hover::before { transform: translateX(0); }
+
+  /* ---------- Hero ---------- */
+  .hero { position: relative; min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; justify-content: center; padding: 110px 24px 80px; overflow: hidden; }
+  .hero-bg { position: absolute; inset: -20%; background-image: radial-gradient(circle, rgba(232,163,61,.16) 1.4px, transparent 1.6px); background-size: 34px 34px; animation: drift 40s linear infinite; pointer-events: none; }
+  .hero-glow { position: absolute; width: 60vmax; height: 60vmax; right: -20vmax; top: -15vmax; border-radius: 50%; background: radial-gradient(circle, rgba(200,98,58,.35), transparent 60%); filter: blur(20px); animation: breathe 9s ease-in-out infinite; pointer-events: none; }
+  @keyframes drift { to { background-position: 340px 340px; } }
+  @keyframes breathe { 0%,100% { transform: scale(1); opacity: .8; } 50% { transform: scale(1.12); opacity: 1; } }
+
+  .steam-wrap { position: relative; width: 110px; height: 150px; margin-bottom: 18px; }
+  .steam-wrap i { position: absolute; bottom: 62px; width: 5px; height: 64px; border-radius: 6px; background: linear-gradient(to top, rgba(232,163,61,.7), transparent); opacity: 0; animation: rise 3.2s ease-in infinite; }
+  .steam-wrap i:nth-child(1) { left: 32%; animation-delay: 0s; }
+  .steam-wrap i:nth-child(2) { left: 50%; animation-delay: 1.05s; }
+  .steam-wrap i:nth-child(3) { left: 68%; animation-delay: 2.1s; }
+  @keyframes rise { 0% { transform: translateY(10px) scaleX(1); opacity: 0; } 25% { opacity: .9; } 100% { transform: translateY(-80px) scaleX(2.4); opacity: 0; } }
+  .cup { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); }
+
+  .eyebrow { position: relative; font-size: 11px; letter-spacing: .18em; color: var(--saffron); margin-bottom: 18px; opacity: 0; animation: fadeUp .9s var(--ease) .05s forwards; }
+  h1 { position: relative; font-family: Georgia, "Times New Roman", serif; font-weight: 500; font-size: clamp(44px, 10vw, 96px); line-height: .98; letter-spacing: -.02em; margin-bottom: 22px; }
+  h1 em { color: var(--saffron); font-style: italic; }
+  .w { display: inline-block; opacity: 0; transform: translateY(40px) rotate(2deg); animation: wordIn 1s var(--ease) forwards; }
+  @keyframes wordIn { to { opacity: 1; transform: none; } }
+  @keyframes fadeUp { to { opacity: 1; transform: none; } }
+  .lead { position: relative; max-width: 440px; font-size: 16px; line-height: 1.65; color: var(--muted); margin-bottom: 30px; opacity: 0; animation: fadeUp 1s var(--ease) 1.2s forwards; transform: translateY(16px); }
+  .btns { position: relative; display: flex; flex-wrap: wrap; gap: 12px; opacity: 0; animation: fadeUp 1s var(--ease) 1.4s forwards; transform: translateY(16px); }
+  .btn { display: inline-flex; align-items: center; gap: 8px; font-size: 15px; padding: 15px 26px; border-radius: 999px; transition: transform .3s var(--ease), box-shadow .3s; }
+  .btn:hover { transform: translateY(-3px); }
+  .btn-main { background: var(--saffron); color: var(--espresso); box-shadow: 0 10px 30px -10px rgba(232,163,61,.6); }
+  .btn-line { border: .5px solid var(--muted); color: var(--cream); }
+  .scroll-hint { position: absolute; bottom: 26px; left: 24px; font-size: 11px; letter-spacing: .18em; color: var(--muted); opacity: .8; }
+
+  /* ---------- Marquee ---------- */
+  .marquee { background: var(--ember); color: var(--paper); overflow: hidden; white-space: nowrap; padding: 16px 0; }
+  .marquee-track { display: inline-flex; animation: slide 26s linear infinite; font-family: Georgia, serif; font-style: italic; font-size: 20px; }
+  .marquee-track span { padding-right: 36px; }
+  .marquee-track span::after { content: "✦"; margin-left: 36px; font-style: normal; opacity: .7; }
+  @keyframes slide { to { transform: translateX(-50%); } }
+
+  /* ---------- Shared ---------- */
+  section { padding: 110px 24px; position: relative; }
+  .label { font-size: 11px; letter-spacing: .18em; color: var(--saffron); margin-bottom: 14px; }
+  h2 { font-family: Georgia, "Times New Roman", serif; font-weight: 500; font-size: clamp(34px, 6.5vw, 58px); line-height: 1.05; letter-spacing: -.01em; margin-bottom: 20px; }
+  .wrap { max-width: 1100px; margin: 0 auto; }
+
+  /* ---------- Menu ---------- */
+  .menu { background: var(--cream); color: var(--ink); }
+  .menu .label { color: var(--maroon); }
+  .menu-head { display: flex; justify-content: space-between; align-items: end; flex-wrap: wrap; gap: 16px; margin-bottom: 40px; }
+  .menu-head p { max-width: 340px; color: var(--ink-soft); line-height: 1.6; font-size: 15px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; perspective: 1000px; }
+  .card { position: relative; overflow: hidden; background: var(--paper); border-radius: 22px; padding: 26px; transform-style: preserve-3d; transition: transform .4s var(--ease), box-shadow .4s; box-shadow: 0 1px 0 rgba(43,29,20,.06); }
+  .card::after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(232,163,61,.22), transparent 55%); opacity: 0; transition: opacity .4s; pointer-events: none; }
+  .card:hover { transform: translateY(-6px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)); box-shadow: 0 30px 60px -30px rgba(43,29,20,.45); }
+  .card:hover::after { opacity: 1; }
+  .tag { display: inline-block; font-size: 11px; letter-spacing: .12em; color: var(--maroon); margin-bottom: 14px; }
+  .card h3 { font-family: Georgia, serif; font-weight: 500; font-size: 23px; margin-bottom: 8px; }
+  .card p { font-size: 14px; line-height: 1.6; color: var(--ink-soft); margin-bottom: 22px; min-height: 44px; }
+  .price { display: flex; justify-content: space-between; align-items: center; font-size: 17px; color: var(--maroon); font-weight: 600; }
+  .price small { font-size: 12px; font-weight: 400; color: var(--ink-soft); letter-spacing: .04em; }
+
+  /* ---------- Story ---------- */
+  .story { background: var(--espresso); }
+  .story-grid { display: grid; gap: 56px; align-items: center; }
+  .story-text p { font-size: 17px; line-height: 1.75; color: var(--muted); margin-bottom: 16px; }
+  .story-art { position: relative; aspect-ratio: 4 / 5; border-radius: 26px; background: var(--maroon); overflow: hidden; }
+  .story-art svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: translateY(var(--p, 0px)) scale(1.15); transition: transform .2s linear; }
+  .sig { margin-top: 20px; font-family: Georgia, serif; font-style: italic; color: var(--saffron); font-size: 18px; }
+
+  /* ---------- Stats ---------- */
+  .stats { background: var(--espresso-2); padding: 80px 24px; }
+  .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; text-align: center; }
+  .num { font-family: Georgia, serif; font-size: clamp(40px, 8vw, 80px); color: var(--saffron); line-height: 1; font-variant-numeric: tabular-nums; }
+  .stat-lbl { margin-top: 10px; font-size: 13px; color: var(--muted); letter-spacing: .04em; }
+
+  /* ---------- Visit ---------- */
+  .visit-grid { display: grid; gap: 40px; }
+  .hours { list-style: none; border-top: .5px solid #4a3828; }
+  .hours li { display: flex; justify-content: space-between; padding: 16px 0; border-bottom: .5px solid #4a3828; font-size: 16px; color: var(--muted); }
+  .hours li b { color: var(--cream); font-weight: 500; }
+  .address { font-family: Georgia, serif; font-size: 26px; line-height: 1.35; margin-bottom: 22px; }
+  .map { position: relative; height: 200px; border-radius: 20px; background: var(--espresso-2); overflow: hidden; display: grid; place-items: center; border: .5px solid #4a3828; }
+  .map::before { content: ""; position: absolute; inset: 0; background-image: linear-gradient(rgba(232,163,61,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(232,163,61,.08) 1px, transparent 1px); background-size: 28px 28px; }
+  .pin { position: relative; width: 18px; height: 18px; border-radius: 50%; background: var(--ember); box-shadow: 0 0 0 0 rgba(200,98,58,.6); animation: ping 2s infinite; }
+  @keyframes ping { 0% { box-shadow: 0 0 0 0 rgba(200,98,58,.6); } 100% { box-shadow: 0 0 0 26px rgba(200,98,58,0); } }
+
+  /* ---------- Footer ---------- */
+  footer { padding: 70px 24px 40px; border-top: .5px solid #4a3828; }
+  .foot-grid { display: grid; gap: 30px; align-items: center; }
+  .foot-grid h3 { font-family: Georgia, serif; font-weight: 500; font-size: 26px; margin-bottom: 6px; }
+  .foot-grid p { font-size: 14px; color: var(--muted); }
+  .news { display: flex; gap: 8px; flex-wrap: wrap; }
+  .news input { flex: 1 1 220px; min-width: 0; padding: 14px 18px; border-radius: 999px; border: .5px solid #5a4632; background: transparent; color: var(--cream); font: inherit; font-size: 14px; }
+  .news input::placeholder { color: #9C8570; }
+  .news input:focus { outline: none; border-color: var(--saffron); }
+  .news button { padding: 14px 22px; border: 0; border-radius: 999px; background: var(--saffron); color: var(--espresso); font: inherit; font-size: 14px; cursor: pointer; transition: transform .3s var(--ease); }
+  .news button:hover { transform: translateY(-2px); }
+  .copy { margin-top: 40px; font-size: 12px; color: #9C8570; text-align: center; letter-spacing: .04em; }
+
+  /* ---------- Reveal ---------- */
+  .reveal { opacity: 0; transform: translateY(44px); transition: opacity 1s var(--ease), transform 1s var(--ease); }
+  .reveal.in { opacity: 1; transform: none; }
+  .d1 { transition-delay: .12s; } .d2 { transition-delay: .24s; } .d3 { transition-delay: .36s; }
+
+  /* ---------- Responsive ---------- */
+  @media (min-width: 760px) {
+    .story-grid { grid-template-columns: 1.1fr .9fr; }
+    .visit-grid { grid-template-columns: 1fr 1fr; align-items: center; }
+    .foot-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 480px) {
+    .stats-grid { gap: 6px; }
+    .num { font-size: 36px; }
+    .stat-lbl { font-size: 11px; }
+  }
+
+  /* ---------- Reduced motion ---------- */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .w, .eyebrow, .lead, .btns { opacity: 1 !important; transform: none !important; }
+    .reveal { opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <a href="#top" class="brand">Ember &amp; Oak</a>
+  <a href="#visit" class="nav-cta">Visit us</a>
+</nav>
+
+<header class="hero" id="top">
+  <div class="hero-bg"></div>
+  <div class="hero-glow"></div>
+
+  <div class="steam-wrap" aria-hidden="true">
+    <i></i><i></i><i></i>
+    <svg class="cup" width="92" height="62" viewBox="0 0 92 62">
+      <path d="M8 6 H70 L64 46 Q62 56 52 56 H26 Q16 56 14 46 Z" fill="#F5EBDD"/>
+      <path d="M8 6 H70 L69 18 H9 Z" fill="#C8623A"/>
+      <path d="M70 20 Q90 20 90 32 Q90 44 66 42" fill="none" stroke="#F5EBDD" stroke-width="6"/>
+      <ellipse cx="39" cy="58" rx="34" ry="4" fill="#5A1A22"/>
+    </svg>
+  </div>
+
+  <p class="eyebrow">EST. 2015 · ROASTED IN HOUSE · CHAI BAR</p>
+  <h1>
+    <span class="w" style="animation-delay:.2s">Slow</span>
+    <span class="w" style="animation-delay:.35s">mornings,</span><br>
+    <em><span class="w" style="animation-delay:.55s">good</span>
+    <span class="w" style="animation-delay:.7s">chai</span>
+    <span class="w" style="animation-delay:.85s">&amp;</span>
+    <span class="w" style="animation-delay:1s">coffee.</span></em>
+  </h1>
+  <p class="lead">Small-batch beans, hand-spiced masala chai, and fresh bread, in a warm room made for staying a while.</p>
+  <div class="btns">
+    <a href="#menu" class="btn btn-main">View menu →</a>
+    <a href="#visit" class="btn btn-line">Find us</a>
+  </div>
+  <span class="scroll-hint">SCROLL</span>
+</header>
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span>Masala chai</span><span>Single origin</span><span>Fresh bread</span><span>Kesar latte</span><span>Slow mornings</span>
+    <span>Masala chai</span><span>Single origin</span><span>Fresh bread</span><span>Kesar latte</span><span>Slow mornings</span>
+  </div>
+</div>
+
+<section class="menu" id="menu">
+  <div class="wrap">
+    <div class="menu-head">
+      <div>
+        <p class="label reveal">SIGNATURE MENU</p>
+        <h2 class="reveal">Made with spice, roasted with care.</h2>
+      </div>
+      <p class="reveal d1">Every drink is made to order. Our chai simmers for an hour, and our beans are roasted in-house each week.</p>
+    </div>
+
+    <div class="grid">
+      <article class="card reveal" data-tilt>
+        <span class="tag">CHAI BAR</span>
+        <h3>Masala chai</h3>
+        <p>Cardamom, clove, and ginger, simmered slow in whole milk.</p>
+        <div class="price">$4.00 <small>Hot or iced</small></div>
+      </article>
+      <article class="card reveal d1" data-tilt>
+        <span class="tag">ESPRESSO</span>
+        <h3>Oat flat white</h3>
+        <p>Double ristretto with silky oat milk and a velvet finish.</p>
+        <div class="price">$5.00 <small>Signature</small></div>
+      </article>
+      <article class="card reveal d2" data-tilt>
+        <span class="tag">HOUSE SPECIAL</span>
+        <h3>Kesar cardamom latte</h3>
+        <p>Saffron, cardamom, and house espresso, lightly sweetened.</p>
+        <div class="price">$5.50 <small>Our favourite</small></div>
+      </article>
+      <article class="card reveal d3" data-tilt>
+        <span class="tag">KITCHEN</span>
+        <h3>Paneer tikka roll</h3>
+        <p>Charred paneer, mint chutney, and warm flatbread.</p>
+        <div class="price">$7.50 <small>Lunch</small></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="story">
+  <div class="wrap story-grid">
+    <div class="story-text reveal">
+      <p class="label">OUR STORY</p>
+      <h2>A small roastery with a big heart.</h2>
+      <p>We opened in 2015 with one roaster and a love for warm spices. Every chai is brewed from scratch, and every bean is roasted in the back room just before it reaches your cup.</p>
+      <p>Our tables are for slow conversations and long mornings. Come early, bring a book, and stay as long as you like.</p>
+      <p class="sig">— The Ember &amp; Oak team</p>
+    </div>
+    <div class="story-art reveal d1" id="parallax">
+      <svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <g fill="none" stroke="#E8A33D" stroke-width="2" opacity=".85">
+          <circle cx="200" cy="250" r="150"/><circle cx="200" cy="250" r="115"/><circle cx="200" cy="250" r="80"/><circle cx="200" cy="250" r="45"/>
+          <path d="M200 60 V440 M10 250 H390 M62 112 L338 388 M338 112 L62 388" opacity=".35"/>
+        </g>
+        <g fill="#E8A33D">
+          <circle cx="200" cy="250" r="10"/>
+          <circle cx="200" cy="100" r="4"/><circle cx="200" cy="400" r="4"/><circle cx="50" cy="250" r="4"/><circle cx="350" cy="250" r="4"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section class="stats">
+  <div class="wrap stats-grid">
+    <div class="reveal"><div class="num" data-count="9">9</div><div class="stat-lbl">years roasting</div></div>
+    <div class="reveal d1"><div class="num" data-count="42">42</div><div class="stat-lbl">origins sourced</div></div>
+    <div class="reveal d2"><div class="num" data-count="1200">1,200</div><div class="stat-lbl">cups a week</div></div>
+  </div>
+</section>
+
+<section class="visit" id="visit">
+  <div class="wrap visit-grid">
+    <div class="reveal">
+      <p class="label">VISIT US</p>
+      <h2>Come stay a while.</h2>
+      <p class="address">123 Maple Street</p>
+      <ul class="hours">
+        <li>Monday to Friday <b>7am to 6pm</b></li>
+        <li>Saturday and Sunday <b>8am to 4pm</b></li>
+      </ul>
+    </div>
+    <div class="map reveal d1" role="img" aria-label="Map placeholder for 123 Maple Street">
+      <span class="pin"></span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-grid">
+    <div class="reveal">
+      <h3>Get our weekly brew notes</h3>
+      <p>New drinks, seasonal beans, and the occasional bakery surprise.</p>
+    </div>
+    <form class="news reveal d1" onsubmit="event.preventDefault(); this.querySelector('button').textContent='Thanks!';">
+      <input type="email" placeholder="your@email.com" aria-label="Email address" required>
+      <button type="submit">Subscribe</button>
+    </form>
+  </div>
+  <p class="copy">Made with care · Ember &amp; Oak · 123 Maple Street</p>
+</footer>
+
+<script>
+  // Nav shrink and blur on scroll
+  const nav = document.getElementById('nav');
+  const onScroll = () => {
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+    const p = document.getElementById('parallax');
+    if (p) p.style.setProperty('--p', (-(window.scrollY - p.offsetTop) * 0.08) + 'px');
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // Reveal on scroll
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // Count-up numbers
+  const countIO = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target, target = +el.dataset.count, t0 = performance.now(), dur = 1800;
+      const tick = (now) => {
+        const p = Math.min((now - t0) / dur, 1);
+        el.textContent = Math.round(target * (1 - Math.pow(1 - p, 4))).toLocaleString();
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+      countIO.unobserve(el);
+    });
+  }, { threshold: 0.6 });
+  document.querySelectorAll('[data-count]').forEach(el => { el.textContent = '0'; countIO.observe(el); });
+
+  // 3D tilt with light follow on menu cards
+  if (matchMedia('(hover: hover)').matches) {
+    document.querySelectorAll('[data-tilt]').forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const r = card.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+        card.style.setProperty('--ry', ((x - .5) * 10).toFixed(2) + 'deg');
+        card.style.setProperty('--rx', ((.5 - y) * 10).toFixed(2) + 'deg');
+        card.style.setProperty('--mx', (x * 100) + '%');
+        card.style.setProperty('--my', (y * 100) + '%');
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.setProperty('--rx', '0deg');
+        card.style.setProperty('--ry', '0deg');
+      });
+    });
+  }
+</script>
+</body>
+</html>
